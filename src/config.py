@@ -1,0 +1,46 @@
+from pathlib import Path
+
+from pydantic import SecretStr
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+ROOT_PATH = Path(__file__).parent.parent
+
+"""
+The class settings will attempt to determine the values of any fields not passed as keyword argument by reading either
+from the environment or a new `.env` file in the service_guide_design folder.
+
+(Default values will still be used if the matching environment variable is not set.)
+(Environment variables will always take priority over values loaded from a dotenv file.)
+"""
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=ROOT_PATH / ".env",
+        env_file_encoding="utf-8",
+        env_ignore_empty=True,
+        extra="ignore",
+    )
+
+    # Application Configuration
+    SERVICE_NAME: str = "FastAPI Service"
+    HOST: str = "0.0.0.0"
+    PORT: int = 8000
+    ORIGINS: list = [
+        "http://localhost",
+        f"http://localhost:{PORT}",
+    ]
+
+    # Logging Configuration
+    LOG_LEVEL: str = "INFO"
+    LOG_SAVE_ON_FILE: bool = False
+
+    # Authentication and Authorization
+    API_KEY: SecretStr
+
+
+settings = Settings()   # type: ignore
+
+
+def init_whatever():
+    # Initialise whatever
+    ...
